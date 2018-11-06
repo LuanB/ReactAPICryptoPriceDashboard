@@ -4,12 +4,12 @@ import styled from 'styled-components'
 
 
 const CustomElement = styled.div`
-  color: green;
+  
   font-size: 30px;
 `
 
 const BlueElement = styled(CustomElement)`
-  color: blue;
+  
 `
 
 
