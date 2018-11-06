@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import styled from 'styled-components';
-import AppBar from './AppBar'
+import AppBar from './AppBar';
+const cc = require('cryptocompare');
 
 
 
@@ -28,9 +29,20 @@ const checkFirstVisit = () => {
 class App extends Component {
   
   state = {
-    page: 'dashboard',
+    page: 'settings',
     ...checkFirstVisit()
   }
+  
+  componentDidMount = () => {
+    // fetch coins
+    this.fetchCoins();
+  }
+  
+  fetchCoins = async () => {
+    let coinList = (await cc.coinList()).Data;
+    this.setState({coinList});
+  }
+  
   
   displayingDashboard = () => this.state.page === 'dashboard'
   displayingSettings = () => this.state.page === 'settings'
@@ -59,16 +71,23 @@ class App extends Component {
   )
   }
   
+  loadingContent = () => {
+    if(!this.state.coinList) {
+      return (<div>Loading ....</div>)
+    }
+  }
+  
   render() {
     return (
       <AppLayout>
         {AppBar.call(this)}
-    
+    {this.loadingContent() ||
   <Content>
     {this.displayingSettings() && this.settingsContent()}
       <div onClick={this.confirmFavorites}>
     </div>
-  </Content>
+  </Content>}
+  
   </AppLayout>
   );
   }
