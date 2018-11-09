@@ -7,6 +7,7 @@ import fuzzy from 'fuzzy';
 
 
 import Search from './Search'
+import Dashboard from './Dashboard'
 import {ConfirmButton} from './Button'
 import AppBar from './AppBar';
 import CoinList from './CoinList'
@@ -30,25 +31,28 @@ export const CenterDiv = styled.div`
   display: grid;
   justify-content: center;
 `
+const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () => {
-  let cryptoDashData = localStorage.getItem('cryptoDash');
+  let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
   if (!cryptoDashData){
     return {
       firstVisit: true,
       page: 'settings'
     }
   }
-  return {};
+  return {
+    favorites: cryptoDashData.favorites
+  };
 }
 
-const MAX_FAVORITES = 10;
+
 
 
 class App extends Component {
   
   state = {
-    page: 'settings',
+    page: 'dashboard',
     favorites: ['ETH', 'BTC', 'WAN','XRP', 'EOS'],
     ...checkFirstVisit()
   }
@@ -56,7 +60,32 @@ class App extends Component {
   componentDidMount = () => {
     // fetch coins
     this.fetchCoins();
+    this.fetchPrices();
   }
+  
+  
+  fetchPrices = async () => {
+    let prices;
+    try {
+      prices = await this.prices();
+    } catch(e) {
+      this.setState({error: true});
+    }
+    console.log(prices);
+    this.setState({prices});
+  }
+  
+  
+  prices = () => {
+    let promises = [];
+    this.state.favorites.forEach(sym => {
+      promises.push(cc.priceFull(sym, 'USD'));
+    })
+    return Promise.all(promises);
+  }
+  
+  
+  
   
   fetchCoins = async () => {
     let coinList = (await cc.coinList()).Data;
@@ -76,8 +105,10 @@ class App extends Component {
 
     this.setState({
       firstVisit: false,
-      page: 'dashboard'
+      page: 'dashboard',
+      prices: null
     });
+    this.fetchPrices(); 
         localStorage.setItem('cryptoDash', JSON.stringify({
           favorites: this.state.favorites
         }));
@@ -110,7 +141,10 @@ class App extends Component {
   
   loadingContent = () => {
     if(!this.state.coinList) {
-      return (<div>Loading ....</div>)
+      return (<div>Loading coins....</div>)
+    }
+    if(!this.state.prices) {
+      return (<div>Loading prices...</div>)
     }
   }
   
@@ -170,8 +204,8 @@ class App extends Component {
     {this.loadingContent() ||
   <Content>
     {this.displayingSettings() && this.settingsContent()}
-      
-    
+    {this.displayingDashboard() && Dashboard.call(this)}
+  
   </Content>}
   
   </AppLayout>
