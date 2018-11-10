@@ -60,11 +60,13 @@ export default function() {
       let tileProps = {
         favorite: sym === this.state.currentFavorite,
         onClick: () => {
-          this.setState({currentFavorite: sym});
+          this.setState({currentFavorite: sym, historical: null});
           localStorage.setItem('cryptoDash', JSON.stringify({
             ...JSON.parse(localStorage.getItem('cryptoDash')),
             currentFavorite: sym}))
+        this.fetchHistorical();
         }
+        
       }
       return  index < 5 ? <CoinTile {...tileProps}>
         <CoinHeaderGrid>
@@ -102,7 +104,12 @@ export default function() {
           />
         </PaddingBlue>
         <PaddingBlue>
-      <ReactHighcharts config={highchartsConfig.call(this)}></ReactHighcharts> 
+          {this.state.historical ?
+      <ReactHighcharts config={highchartsConfig.call(this)}></ReactHighcharts>
+      
+      : <div> Loading historical data...</div>
+      
+      } 
         </PaddingBlue>
         </ChartGrid>
     </div>
