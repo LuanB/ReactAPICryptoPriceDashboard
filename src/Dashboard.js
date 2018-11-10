@@ -9,9 +9,11 @@ import {
   fontSize2,
   backgroundColor2
 } from './Style';
-//import highchartsConfig from './HighchartsConfig';
+import highchartsConfig from './HighchartsConfig';
 //import theme from './HighchartsTheme';
-//const ReactHighcharts = require('react-highcharts');
+
+//import * as ReactHighcharts from 'highcharts';
+const ReactHighcharts = require('react-highcharts');
 
 const numberFormat = (number) => {
   return +(number + '').slice(0,7);
@@ -100,7 +102,7 @@ export default function() {
           />
         </PaddingBlue>
         <PaddingBlue>
-        {this.state.coinList[this.state.currentFavorite].CoinName}  Chart goes here...
+      <ReactHighcharts config={highchartsConfig.call(this)}></ReactHighcharts> 
         </PaddingBlue>
         </ChartGrid>
     </div>
