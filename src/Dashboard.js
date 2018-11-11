@@ -1,6 +1,9 @@
 import React from 'react';
 import { CoinGrid, CoinTile, CoinHeaderGrid, CoinSymbol } from './CoinList';
 import styled, { css } from 'styled-components';
+import {Line} from 'britecharts-react';
+
+
 import {
   fontSizeBig,
   fontSize3,
@@ -9,11 +12,16 @@ import {
   fontSize2,
   backgroundColor2
 } from './Style';
+
+import LinechartData from './LinechartData'
 import highchartsConfig from './HighchartsConfig';
 //import theme from './HighchartsTheme';
 
 //import * as ReactHighcharts from 'highcharts';
 const ReactHighcharts = require('react-highcharts');
+
+
+
 
 const numberFormat = (number) => {
   return +(number + '').slice(0,7);
@@ -53,6 +61,9 @@ const ChartGrid = styled.div`
 // `;
 
 export default function() {
+  
+
+  
   return <div> <CoinGrid>
       {this.state.prices.map((price, index) => {
       let sym = Object.keys(price)[0];
@@ -111,6 +122,11 @@ export default function() {
       
       } 
         </PaddingBlue>
+        
+        <div>
+<Line data={this.state.historical} height={400} width={600}></Line>
+      </div>
+        
         </ChartGrid>
     </div>
     

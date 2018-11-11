@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import _ from 'lodash';
 import fuzzy from 'fuzzy';
 import moment from 'moment'
+//import * as moment from 'moment'
 
 
 import Search from './Search'
@@ -81,38 +82,70 @@ class App extends Component {
       this.setState({prices});
   }
   
+  // fetchHistorical = async () => {
+  //    if (this.state.firstVisit) return;
+  //    let results = await this.historical();
+  //    let historical = [
+  //      {
+  //        name: this.state.currentFavorite,
+  //        data: results.map((ticker, index) => [
+  //          moment()
+  //            .subtract({ [this.state.timeInterval]: TIME_UNITS - index })
+  //            .valueOf(),
+  //          ticker.USD
+  //        ])
+  //      }
+  //    ];
+  //    this.setState({ historical });
+  //    console.log(historical);
+  //  };
+  // 
+
+  
   fetchHistorical = async () => {
      if (this.state.firstVisit) return;
      let results = await this.historical();
-     let historical = [
+     let historical = {dataByTopic: [
        {
-         name: this.state.currentFavorite,
-         data: results.map((ticker, index) => [
-           moment()
-             .subtract({ [this.state.timeInterval]: TIME_UNITS - index })
-             .valueOf(),
-           ticker.USD
-         ])
+         topicName: this.state.currentFavorite,
+         topic: 123,
+         dates: results.map((ticker, index) => ({
+           date: moment()
+               .subtract({ [this.state.timeInterval]: TIME_UNITS - index })
+              .format('YYYY-MM-DD'),
+           value: ticker.USD
+         }) )
        }
-     ];
+     ]
+   }
+     
+     
      this.setState({ historical });
+     console.log(historical);
    };
+ 
+
+
   
+   
+
+
    historical = () => {
-     let promises = [];
-     for (let units = TIME_UNITS; units > 0; units--) {
-       promises.push(
-         cc.priceHistorical(
-           this.state.currentFavorite,
-           ['USD'],
-           moment()
-             .subtract({ [this.state.timeInterval]: units })
-             .toDate()
-         )
-       );
-     }
-     return Promise.all(promises);
-   };
+       let promises = [];
+       for (let units = TIME_UNITS; units > 0; units--) {
+         promises.push(
+           cc.priceHistorical(
+             this.state.currentFavorite,
+             ['USD'],
+             moment()
+               .subtract({ [this.state.timeInterval]: units })
+               .toDate()
+           )
+         );
+       }
+       return Promise.all(promises);
+     };
+
   
   prices = () => {
     let promises = [];
@@ -121,7 +154,6 @@ class App extends Component {
     })
     return Promise.all(promises);
   }
-  
   
   
   
